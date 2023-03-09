@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  mongo:
+    image: bitnami/mongodb:6.0.3
+    network_mode: service:workspace
+    environment:
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_REPLICA_SET_NAME: rs0
+      MONGODB_ADVERTISED_HOSTNAME: localhost
+      MONGODB_ROOT_USER: root
+      MONGODB_ROOT_PASSWORD: password
+      MONGODB_REPLICA_SET_KEY: rs0key
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh mongo:27017/test --quiet
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - mongo-data:/data/db
+
+  workspace:
+    image: mcr.microsoft.com/devcontainers/base:jammy
+    command: sleep infinity
+    volumes:
+      - ..:/workspaces/wisu
+
+volumes:
+  mongo-data:
+  minio-data:
